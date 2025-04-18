@@ -60,10 +60,10 @@ public class Tetromino {
         };
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
         Random random = new Random();
-        int index = random.nextInt(6);
-        // Color [][] tetromino = tetrominoList.get(index);
+        int index = random.nextInt(7);
+        Color [][] tetromino = tetrominoList[index];
 
-        buildBlock(pyramid);
+        buildBlock(tetromino);
     }
 
 
