@@ -9,7 +9,7 @@ public class Tetromino {
     }
     public boolean[][] tetrominoSquare() {
         boolean[][] square = new boolean[2][2];
-        square = new rectagle 
+        square = new rectangle() 
 
     }
 }
