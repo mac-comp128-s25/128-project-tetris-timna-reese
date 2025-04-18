@@ -6,6 +6,7 @@ public class Main {
     private CanvasWindow canvas;
     public static final int CANVAS_WIDTH = 500;
     public static final int CANVAS_HEIGHT = 700;
+    private Tetromino tetromino;
 
     public Main(){
        canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -20,6 +21,9 @@ public class Main {
             horizontalLine.setStrokeColor(Color.DARK_GRAY);
             canvas.add(horizontalLine);
         }
+        tetromino = new Tetromino(canvas);
+        
+
     } 
     public static void main(String[] args) {
         new Main();
