@@ -1,17 +1,50 @@
-import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.*;
+import edu.macalester.graphics.events.Key;
+
 import java.awt.Color;
+
 
 public class Main {
     private CanvasWindow canvas;
-    public static final int CANVAS_WIDTH = 500;
+    public static final int CANVAS_WIDTH = 350;
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
 
     public Main(){
-       canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
-       canvas.setBackground(Color.BLACK);
-       for (int i = 0; i<= CANVAS_WIDTH; i +=(CANVAS_WIDTH/10)){
+        canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
+        canvas.setBackground(Color.BLACK);
+        drawBoard(canvas);
+        tetromino = new Tetromino(canvas);
+        tetromino.draw();
+
+        canvas.onKeyDown((e) -> {
+            String key = e.getKey().toString();
+            if (key.equals("DOWN_ARROW")){
+                tetromino.erase();
+                tetromino.moveDown();
+                tetromino.draw();
+            }
+            else if(key.equals("LEFT_ARROW")){
+                tetromino.erase();
+                tetromino.moveLeft();
+                tetromino.draw();
+            }
+            else if(key.equals("RIGHT_ARROW")){
+                tetromino.erase();
+                tetromino.moveRight();
+                tetromino.draw();
+            }
+            else if(key.equals("SPACE")){
+                tetromino.erase();
+                tetromino.rotate();
+                tetromino.draw();
+            }
+        });
+
+    } 
+
+    public void drawBoard(CanvasWindow canvas){
+        for (int i = 0; i<= CANVAS_WIDTH; i +=(CANVAS_WIDTH/10)){
             Line verticalLine = new Line (i, 0, i, CANVAS_HEIGHT);
             verticalLine.setStrokeColor(Color.DARK_GRAY);
             canvas.add(verticalLine);
@@ -21,10 +54,8 @@ public class Main {
             horizontalLine.setStrokeColor(Color.DARK_GRAY);
             canvas.add(horizontalLine);
         }
-        tetromino = new Tetromino(canvas);
-        
+    }
 
-    } 
     public static void main(String[] args) {
         new Main();
     }
