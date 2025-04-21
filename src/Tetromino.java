@@ -78,11 +78,16 @@ public class Tetromino {
             {null, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA},
             {null, null, null, null},
         };
+        newTetromino();
+    }
+    public Color[][] newTetromino(){
+        x = 0;
+        y = 0;
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
         Random random = new Random();
         int index = random.nextInt(7);
         this.shape = tetrominoList[index];
-        
+        return shape;
     }
 
     public void createRectangle(int row, int column, Color color){
@@ -111,7 +116,19 @@ public class Tetromino {
     }
 
     public void moveDown(){
-        x +=1;
+        
+        double bottom = Main.CANVAS_HEIGHT - HEIGHT;
+        boolean bottomCollision = false;
+        for (int i = 0; i< rectangleList.size(); i++) {
+            double yval = rectangleList.get(i).getY();
+            if (yval == bottom) {
+                bottomCollision = true;
+                newTetromino();
+            }
+        }
+        if (bottomCollision == false) {
+            x += 1;
+        }  
     }
 
     public void moveRight(){
