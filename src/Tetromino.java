@@ -86,7 +86,7 @@ public class Tetromino {
     }
 
     public void createRectangle(int row, int column, Color color){
-        Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
+        Rectangle rect = new Rectangle(WIDTH*(column+3),HEIGHT*(row-1),WIDTH,HEIGHT);
         rect.setFillColor(color);
         rectangleList.add(rect);
         canvas.add(rect);
