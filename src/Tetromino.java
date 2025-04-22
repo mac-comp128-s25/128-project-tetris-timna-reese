@@ -81,7 +81,7 @@ public class Tetromino {
         newTetromino();
     }
     public Color[][] newTetromino(){
-        x = 0;
+        x = -1;
         y = 0;
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
         Random random = new Random();
@@ -91,7 +91,7 @@ public class Tetromino {
     }
 
     public void createRectangle(int row, int column, Color color){
-        Rectangle rect = new Rectangle(WIDTH*(column+3),HEIGHT*(row-1),WIDTH,HEIGHT);
+        Rectangle rect = new Rectangle(WIDTH*column+3,HEIGHT*row,WIDTH,HEIGHT);
         rect.setFillColor(color);
         rectangleList.add(rect);
         canvas.add(rect);
@@ -131,12 +131,30 @@ public class Tetromino {
         }  
     }
 
+    public boolean wallCollision(int newY) {
+        for (int i=0; i < shape.length; i++) {
+            for (int j=0; j< shape[i].length; j++) {
+                if (shape[i][j] != null) {
+                    int column = newY + j;
+                    if (column < 0 || column >= 10) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public void moveRight(){
-        y+=1;
+        if (wallCollision(y+1)) {
+            y+=1;
+        }
     }
 
     public void moveLeft(){
-        y-=1;
+        if (wallCollision(y-1)) {
+            y-=1;
+        }
     }
 
     public void rotate(){
