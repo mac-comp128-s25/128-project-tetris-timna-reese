@@ -81,7 +81,6 @@ public class Tetromino {
         newTetromino();
     }
     public Color[][] newTetromino(){
-       
         x = -1;
         y = 0;
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
@@ -96,7 +95,7 @@ public class Tetromino {
         Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
         rect.setFillColor(color);
         rectangleList.add(rect);
-        this.collisionList.add(rect);
+        // this.collisionList.add(rect);
         canvas.add(rect);
     }
     
@@ -108,7 +107,6 @@ public class Tetromino {
     }
 
     public void draw(){
-        //Color [][] shape = newTetromino();
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
                 if(shape[i][j] != null){
@@ -118,6 +116,7 @@ public class Tetromino {
             }
         }          
     }
+
     public boolean bottom() {
         double bottom = Main.CANVAS_HEIGHT - HEIGHT;
         for (int i = 0; i< rectangleList.size(); i++) {
@@ -130,8 +129,8 @@ public class Tetromino {
     }
     
     public void moveDown(){
-
-        if (bottom()) {
+        if (bottom() || checkCollision()) {
+            collisionList.addAll(rectangleList);
             rectangleList.clear();
             newTetromino();
             draw();
@@ -153,6 +152,21 @@ public class Tetromino {
             }
         }
         return true;
+    }
+
+    public boolean checkCollision(){
+        for (int j = 0; j<collisionList.size(); j++){
+            for (int i = 0; i< rectangleList.size(); i++){
+                double bottomCurrent = rectangleList.get(i).getY()+HEIGHT;
+                double topPlaced = collisionList.get(j).getY();
+                double sideCurrent = rectangleList.get(i).getX();
+                double sidePlaced = collisionList.get(j).getX();
+                if (bottomCurrent == topPlaced && sideCurrent == sidePlaced){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void moveRight(){
