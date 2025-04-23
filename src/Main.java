@@ -34,14 +34,15 @@ public class Main {
                 tetromino.moveRight();
                 tetromino.draw();
             }
-            else if(key.equals("SPACE")){
-                tetromino.erase();
-                tetromino.rotate();
-                tetromino.draw();
-            }
+            // else if(key.equals("SPACE")){
+            //     tetromino.erase();
+            //     tetromino.rotate();
+            //     tetromino.draw();
+            // }
         });
-
     } 
+
+
 
     public void drawBoard(CanvasWindow canvas){
         for (int i = 0; i<= CANVAS_WIDTH; i +=(CANVAS_WIDTH/10)){

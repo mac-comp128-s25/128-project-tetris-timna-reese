@@ -10,20 +10,19 @@ import edu.macalester.graphics.Rectangle;
 public class Tetromino {
     public static final int WIDTH = Main.CANVAS_WIDTH / 10;
     public static final int HEIGHT = Main.CANVAS_HEIGHT / 20;
-    List<Color> colorList;
-    CanvasWindow canvas;
-    Color[][] square;
-    Color[][] line;
-    Color[][] leftL;
-    Color[][] rightL;
-    Color[][] forwardS;
-    Color[][] backwardS;
-    Color[][] pyramid;
-    Color [][] shape;
-    
-    List<Rectangle> rectangleList = new ArrayList<Rectangle>();
-    int x;
-    int y;
+    private CanvasWindow canvas;
+    private Color[][] square;
+    private Color[][] line;
+    private Color[][] leftL;
+    private Color[][] rightL;
+    private Color[][] forwardS;
+    private Color[][] backwardS;
+    private Color[][] pyramid;
+    private Color [][] shape;
+    private List<Rectangle> rectangleList = new ArrayList<Rectangle>();
+    private int x;
+    private int y;
+    private List<Rectangle> collisionList = new ArrayList<Rectangle>();
     
 
     public Tetromino(CanvasWindow canvas){
@@ -77,7 +76,8 @@ public class Tetromino {
             {null, null, Color.MAGENTA, null},
             {null, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA},
             {null, null, null, null},
-        };
+        }; 
+
         newTetromino();
     }
     public Color[][] newTetromino(){
@@ -91,9 +91,10 @@ public class Tetromino {
     }
 
     public void createRectangle(int row, int column, Color color){
-        Rectangle rect = new Rectangle(WIDTH*column+3,HEIGHT*row,WIDTH,HEIGHT);
+        Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
         rect.setFillColor(color);
         rectangleList.add(rect);
+        this.collisionList.add(rect);
         canvas.add(rect);
     }
     
@@ -105,6 +106,7 @@ public class Tetromino {
     }
 
     public void draw(){
+        Color [][] shape = newTetromino();
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
                 if(shape[i][j] != null){
@@ -116,7 +118,6 @@ public class Tetromino {
     }
 
     public void moveDown(){
-        
         double bottom = Main.CANVAS_HEIGHT - HEIGHT;
         boolean bottomCollision = false;
         for (int i = 0; i< rectangleList.size(); i++) {
