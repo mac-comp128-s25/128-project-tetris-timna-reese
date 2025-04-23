@@ -34,11 +34,11 @@ public class Main {
                 tetromino.moveRight();
                 tetromino.draw();
             }
-            // else if(key.equals("SPACE")){
-            //     tetromino.erase();
-            //     tetromino.rotate();
-            //     tetromino.draw();
-            // }
+            else if(key.equals("SPACE")){
+                tetromino.erase();
+                tetromino.rotate();
+                tetromino.draw();
+            }
         });
     } 
 
