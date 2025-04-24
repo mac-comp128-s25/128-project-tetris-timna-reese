@@ -20,7 +20,7 @@ public class Tetromino {
     private Color[][] pyramid;
     private Color [][] shape;
     private List<Rectangle> rectangleList = new ArrayList<Rectangle>();
-    private int x;
+    private double x;
     private int y;
     private List<Rectangle> collisionList = new ArrayList<Rectangle>();
     
@@ -79,6 +79,9 @@ public class Tetromino {
         }; 
 
         newTetromino();
+        // while(true){
+        //     setX(0.1);
+        // }
     }
     public Color[][] newTetromino(){
         x = -1;
@@ -111,13 +114,14 @@ public class Tetromino {
             for (int j = 0; j < shape[i].length; j++){
                 if(shape[i][j] != null){
                     Color color = shape[i][j];
-                    createRectangle(x+i,y+j, color);
+                    int intX = (int)x;
+                    createRectangle(intX+i,y+j, color);
                 }
             }
         }          
     }
 
-    public boolean bottom() {
+    public boolean checkBottomCollision() {
         double bottom = Main.CANVAS_HEIGHT - HEIGHT;
         for (int i = 0; i< rectangleList.size(); i++) {
             double yval = rectangleList.get(i).getY();
@@ -129,14 +133,20 @@ public class Tetromino {
     }
     
     public void moveDown(){
-        if (bottom() || checkCollision()) {
+        if (!checkAnyCollision())
+            x+=1;
+    }
+
+    public boolean checkAnyCollision(){
+        if(checkBottomCollision() || checkBlockCollision()){
             collisionList.addAll(rectangleList);
             rectangleList.clear();
             newTetromino();
             draw();
-        }  
-        else {
-            x+=1;
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -154,7 +164,7 @@ public class Tetromino {
         return true;
     }
 
-    public boolean checkCollision(){
+    public boolean checkBlockCollision(){
         for (int j = 0; j<collisionList.size(); j++){
             for (int i = 0; i< rectangleList.size(); i++){
                 double bottomCurrent = rectangleList.get(i).getY()+HEIGHT;
@@ -167,6 +177,14 @@ public class Tetromino {
             }
         }
         return false;
+    }
+
+    public double getX(){
+        return x;
+    }
+
+    public void setX(double down){
+        x += down;
     }
 
     public void moveRight(){

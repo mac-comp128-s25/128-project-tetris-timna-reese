@@ -17,29 +17,30 @@ public class Main {
         tetromino = new Tetromino(canvas);
         tetromino.draw();
 
-        canvas.onKeyDown((e) -> {
-            String key = e.getKey().toString();
-            if (key.equals("DOWN_ARROW")){
-                tetromino.moveDown();
-                tetromino.erase();
-                tetromino.draw();
-            }
-            else if(key.equals("LEFT_ARROW")){
-                tetromino.erase();
-                tetromino.moveLeft();
-                tetromino.draw();
-            }
-            else if(key.equals("RIGHT_ARROW")){
-                tetromino.erase();
-                tetromino.moveRight();
-                tetromino.draw();
-            }
-            else if(key.equals("SPACE")){
-                tetromino.erase();
-                tetromino.rotate();
-                tetromino.draw();
-            }
-        });
+            canvas.onKeyDown((e) -> {
+                String key = e.getKey().toString();
+                if (key.equals("DOWN_ARROW")){
+                    tetromino.moveDown();
+                    tetromino.erase();
+                    tetromino.draw();
+                    tetromino.checkAnyCollision();
+                }
+                else if(key.equals("LEFT_ARROW")){
+                    tetromino.erase();
+                    tetromino.moveLeft();
+                    tetromino.draw();
+                }
+                else if(key.equals("RIGHT_ARROW")){
+                    tetromino.erase();
+                    tetromino.moveRight();
+                    tetromino.draw();
+                }
+                else if(key.equals("SPACE")){
+                    tetromino.erase();
+                    tetromino.rotate();
+                    tetromino.draw();
+                }
+            });
     } 
 
 
