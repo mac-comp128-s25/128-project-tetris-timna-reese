@@ -1,5 +1,4 @@
 import edu.macalester.graphics.CanvasWindow;
-import edu.macalester.graphics.*;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import edu.macalester.graphics.Rectangle;
 
 public class Tetromino {
     public static final int WIDTH = Main.CANVAS_WIDTH / 10;
-    public static final int HEIGHT = Main.CANVAS_HEIGHT / 10;
+    public static final int HEIGHT = Main.CANVAS_HEIGHT / 20;
     private CanvasWindow canvas;
     private Color[][] square;
     private Color[][] line;
@@ -79,18 +78,16 @@ public class Tetromino {
         }; 
 
         newTetromino();
-        // while(true){
-        //     setX(0.1);
-        // }
     }
+
     public Color[][] newTetromino(){
         x = -1;
-        y = 0;
+        y = 3;
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
         Random random = new Random();
         int index = random.nextInt(7);
         this.shape = tetrominoList[index];
-        draw(); //new
+        draw(); 
         return shape;
     }
 
@@ -103,7 +100,6 @@ public class Tetromino {
         }
         rect.setFillColor(color);
         rectangleList.add(rect);
-        // this.collisionList.add(rect);
         canvas.add(rect);
     }
     
@@ -220,12 +216,15 @@ public class Tetromino {
     }
 
     public void rotate(){
+        
         Color [] [] newShape = new Color[4][4];
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
                 newShape[j][3-i] = shape[i][j];
             }
         }
+        
+        //put wallCollision check here
         shape = newShape;
     }
 

@@ -1,6 +1,4 @@
 import edu.macalester.graphics.*;
-import edu.macalester.graphics.events.Key;
-
 import java.awt.Color;
 
 
@@ -16,6 +14,7 @@ public class Main {
         drawBoard(canvas);
         tetromino = new Tetromino(canvas);
         tetromino.draw();
+        animateTetromino(canvas);
 
             canvas.onKeyDown((e) -> {
                 String key = e.getKey().toString();
@@ -44,6 +43,15 @@ public class Main {
     } 
 
 
+    public void animateTetromino(CanvasWindow canvas){
+        canvas.animate(() -> {
+            tetromino.getX();
+            tetromino.setX(0.03);
+            tetromino.checkAnyCollision();
+            tetromino.erase();
+            tetromino.draw();
+        });
+    }
 
     public void drawBoard(CanvasWindow canvas){
         for (int i = 0; i<= CANVAS_WIDTH; i +=(CANVAS_WIDTH/10)){
