@@ -9,7 +9,7 @@ import edu.macalester.graphics.Rectangle;
 
 public class Tetromino {
     public static final int WIDTH = Main.CANVAS_WIDTH / 10;
-    public static final int HEIGHT = Main.CANVAS_HEIGHT / 20;
+    public static final int HEIGHT = Main.CANVAS_HEIGHT / 10;
     private CanvasWindow canvas;
     private Color[][] square;
     private Color[][] line;
@@ -96,6 +96,11 @@ public class Tetromino {
 
     public void createRectangle(int row, int column, Color color){
         Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
+        if (checkTopCollision() && checkBlockCollision()) {
+            System.out.println("top");
+            canvas.removeAll();
+            return;
+        }
         rect.setFillColor(color);
         rectangleList.add(rect);
         // this.collisionList.add(rect);
@@ -131,7 +136,18 @@ public class Tetromino {
         }
         return false;
     }
-    
+
+    public boolean checkTopCollision() {
+        double top = -1;
+        for (int i = 0; i<rectangleList.size(); i++) {
+            double yval = rectangleList.get(i).getY();
+            if (yval <= top) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void moveDown(){
         if (!checkAnyCollision())
             x+=1;
@@ -143,6 +159,10 @@ public class Tetromino {
             rectangleList.clear();
             newTetromino();
             draw();
+            return true;
+        }
+        if(checkTopCollision()) {
+            canvas.removeAll();
             return true;
         }
         else{
