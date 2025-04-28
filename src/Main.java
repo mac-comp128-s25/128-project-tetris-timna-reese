@@ -25,14 +25,18 @@ public class Main {
                     tetromino.checkAnyCollision();
                 }
                 else if(key.equals("LEFT_ARROW")){
+                    if(tetromino.checkSideCollision()!=2){
                     tetromino.erase();
                     tetromino.moveLeft();
                     tetromino.draw();
+                    }
                 }
                 else if(key.equals("RIGHT_ARROW")){
+                    if(tetromino.checkSideCollision()!=1){
                     tetromino.erase();
                     tetromino.moveRight();
                     tetromino.draw();
+                    }
                 }
                 else if(key.equals("SPACE")){
                     tetromino.erase();

@@ -181,18 +181,69 @@ public class Tetromino {
     }
 
     public boolean checkBlockCollision(){
-        for (int j = 0; j<collisionList.size(); j++){
-            for (int i = 0; i< rectangleList.size(); i++){
-                double bottomCurrent = rectangleList.get(i).getY()+HEIGHT;
-                double topPlaced = collisionList.get(j).getY();
-                double sideCurrent = rectangleList.get(i).getX();
-                double sidePlaced = collisionList.get(j).getX();
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                double bottomCurrent = rectangleList.get(j).getY()+HEIGHT;
+                double topPlaced = collisionList.get(i).getY();
+                // double topCurrent = rectangleList.get(i).getY();
+                double sideCurrent = rectangleList.get(j).getX();
+                double sidePlaced = collisionList.get(i).getX();
                 if (bottomCurrent == topPlaced && sideCurrent == sidePlaced){
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public boolean checkRightCollision(){
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
+                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
+                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
+                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
+                if (rowPlaced == rowCurrent && colCurrent+1 == colPlaced ){
+                    return true; //cannot move right
+                    }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkLeftCollision(){
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
+                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
+                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
+                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
+                if (rowPlaced == rowCurrent && colCurrent-1 == colPlaced){
+                    return true; //cannot move left
+                    }
+            }
+        }
+        return false;
+    }
+
+    public int checkSideCollision(){
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
+                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
+                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
+                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
+                if (rowPlaced == rowCurrent){
+                    if(colCurrent+1 == colPlaced ){
+                    return 1; //cannot move right
+                    }
+                    if (colCurrent-1 == colPlaced){
+                    return 2; //cannot move left
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public double getX(){
@@ -204,7 +255,7 @@ public class Tetromino {
     }
 
     public void moveRight(){
-        if (wallCollision(y+1)) {
+        if (wallCollision(y+1) ) {
             y+=1;
         }
     }
@@ -223,7 +274,7 @@ public class Tetromino {
                 newShape[j][3-i] = shape[i][j];
             }
         }
-        
+        //if one piece is outside, move whole piece to the right or whole piece to the left
         //put wallCollision check here
         shape = newShape;
     }
