@@ -172,12 +172,12 @@ public class Tetromino {
                 if (shape[i][j] != null) {
                     int column = newY + j;
                     if (column < 0 || column >= 10) {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean checkBlockCollision(){
@@ -191,36 +191,6 @@ public class Tetromino {
                 if (bottomCurrent == topPlaced && sideCurrent == sidePlaced){
                     return true;
                 }
-            }
-        }
-        return false;
-    }
-
-    public boolean checkRightCollision(){
-        for (int i = 0; i<collisionList.size(); i++){
-            for (int j = 0; j< rectangleList.size(); j++){
-                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
-                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
-                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
-                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
-                if (rowPlaced == rowCurrent && colCurrent+1 == colPlaced ){
-                    return true; //cannot move right
-                    }
-            }
-        }
-        return false;
-    }
-
-    public boolean checkLeftCollision(){
-        for (int i = 0; i<collisionList.size(); i++){
-            for (int j = 0; j< rectangleList.size(); j++){
-                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
-                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
-                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
-                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
-                if (rowPlaced == rowCurrent && colCurrent-1 == colPlaced){
-                    return true; //cannot move left
-                    }
             }
         }
         return false;
@@ -255,25 +225,39 @@ public class Tetromino {
     }
 
     public void moveRight(){
-        if (wallCollision(y+1) ) {
+        if (!wallCollision(y+1) ) {
             y+=1;
         }
     }
 
     public void moveLeft(){
-        if (wallCollision(y-1)) {
+        if (!wallCollision(y-1)) {
             y-=1;
         }
     }
 
     public void rotate(){
-        
         Color [] [] newShape = new Color[4][4];
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
                 newShape[j][3-i] = shape[i][j];
             }
         }
+        int shiftX = 0;
+        for(int i = 0; i< newShape.length; i++){
+            for (int j = 0; j < newShape[i].length; j++){
+                if (newShape[i][j] != null) {
+                    int column = (int) y + j;
+                    if(column < 0){
+                        shiftX = Math.max(shiftX, -column);
+                    }
+                    else{
+                        shiftX = Math.min(shiftX, 10 - column - 1);
+                    }
+                }
+            }
+        }
+        y+= shiftX;
         //if one piece is outside, move whole piece to the right or whole piece to the left
         //put wallCollision check here
         shape = newShape;
