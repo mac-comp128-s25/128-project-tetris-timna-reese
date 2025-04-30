@@ -10,14 +10,14 @@ public class Main {
     public static final int CANVAS_WIDTH = 350;
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
-    private boolean isGameOver = false;
+    private static boolean isGameOver = false;
 
     
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
         Button startButton = new Button("Play Tetris");
-        startButton.setPosition(120, 50);
+        startButton.setCenter(CANVAS_WIDTH/2, CANVAS_HEIGHT/5);
         startButton.onClick(() -> {
             startGame();
             canvas.remove(startButton);
@@ -25,11 +25,14 @@ public class Main {
         canvas.add(startButton);
     } 
 
+
     public void startGame(){
         drawBoard(canvas);
-        tetromino = new Tetromino(canvas, this);
+        tetromino = new Tetromino(canvas);
         tetromino.draw();
         animateTetromino(canvas);
+
+        canvas.onKeyDown(null);
 
             canvas.onKeyDown((e) -> {
                 String key = e.getKey().toString();
@@ -38,7 +41,6 @@ public class Main {
                         tetromino.moveDown();
                         tetromino.erase();
                         tetromino.draw();
-                        tetromino.checkAnyCollision();
                     }
                     else if(key.equals("LEFT_ARROW")){
                         if(tetromino.checkSideCollision()!=2){
@@ -64,15 +66,23 @@ public class Main {
             });
     }
 
+    public static void setGameOver(boolean bool){
+        isGameOver = bool;
+    }
+
     public void animateTetromino(CanvasWindow canvas){
         canvas.animate(() -> {
-            if( !isGameOver) {
-                tetromino.getX();
-            tetromino.setX(0.03);
-            tetromino.checkAnyCollision();
-            tetromino.erase();
-            tetromino.draw();
-            tetromino.clearRow();   
+            if(!isGameOver) {
+                if(!tetromino.checkAnyCollision()){
+                    tetromino.getX();
+                    tetromino.setX(0.03);
+                    tetromino.erase();
+                    tetromino.draw();
+                    tetromino.clearRow();   
+                }
+            }
+            else{
+                gameOver();
             }
         });
     }
@@ -91,14 +101,30 @@ public class Main {
     }
 
     public void gameOver() {
-        isGameOver = true;
-        System.out.println("Game Over!");
+        canvas.pause(100);
         canvas.removeAll();
-        
+        canvas.setBackground(Color.RED);
+        GraphicsText gameOver= new GraphicsText();
+        GraphicsText youLose= new GraphicsText();
+        gameOver.setText("Game Over");
+        youLose.setText("You Lose!");
+        gameOver.setPosition(30, CANVAS_HEIGHT/4);
+        youLose.setPosition(40, CANVAS_HEIGHT/3);
+        gameOver.setFontSize(55);
+        youLose.setFontSize(55);
+        canvas.add(gameOver);
+        canvas.add(youLose);
+        canvas.pause(1000);
+
+        // canvas.removeAll();
+
         Button restartButton = new Button("Play Again");
         restartButton.setCenter(CANVAS_WIDTH /2.0, CANVAS_HEIGHT/2.0 +20);
         restartButton.onClick(() -> {
+            isGameOver= false;
             canvas.removeAll();
+            tetromino.clearAll();
+            canvas.setBackground(Color.BLACK);
             startGame();
         });
         canvas.add(restartButton);
