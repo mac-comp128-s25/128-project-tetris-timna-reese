@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import edu.macalester.graphics.Rectangle;
 
@@ -298,7 +299,19 @@ public class Tetromino {
                 collisionMap.put(row,check);
             }   
         }
-         
+        Set<Integer> keySet = collisionMap.keySet();
+        
+        for (Integer key: keySet) {
+            if(collisionMap.get(key).size()==10){
+                List<Rectangle> rectangles = collisionMap.get(key);
+                for(Rectangle rect: rectangles){
+                    collisionList.remove(rect);
+                    canvas.remove(rect);
+                }
+            }
+        }
     }
+
+    
 
 }

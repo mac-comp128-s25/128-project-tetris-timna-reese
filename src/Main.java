@@ -54,6 +54,7 @@ public class Main {
             tetromino.checkAnyCollision();
             tetromino.erase();
             tetromino.draw();
+            tetromino.clearRow();
         });
     }
 
