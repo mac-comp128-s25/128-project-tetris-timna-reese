@@ -268,19 +268,16 @@ public class Tetromino {
         //put wallCollision check here
         shape = newShape;
     }
-    // public void clearRow() {
-    //    int rows = Main.CANVAS_HEIGHT / HEIGHT;
-    //    int cols = Main.CANVAS_WIDTH / WIDTH;
-    //    List<Rectangle> rowBlocks = new ArrayList<>();
-    //    for (Rectangle r: collisionList) {
-                
-    //         }
+    
+    public void moveRowDown(int rowCleared){
+        for(Rectangle rect: collisionList){
+            double row = rect.getY();
+            rect.setY(row+HEIGHT);
+        }
+        
+    }
 
 
-    // }
-    // public void moveRowDown(){
-    //     int rows
-    // }
     public void clearRow() {
         int rows = Main.CANVAS_HEIGHT / HEIGHT;
         int cols = Main.CANVAS_WIDTH / WIDTH;
@@ -308,6 +305,7 @@ public class Tetromino {
                     collisionList.remove(rect);
                     canvas.remove(rect);
                 }
+                moveRowDown(key);
             }
         }
     }
