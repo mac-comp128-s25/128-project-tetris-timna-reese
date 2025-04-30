@@ -1,4 +1,6 @@
 import edu.macalester.graphics.*;
+import edu.macalester.graphics.ui.Button;
+
 import java.awt.Color;
 
 
@@ -11,6 +13,16 @@ public class Main {
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
+        Button startButton = new Button("Play Tetris");
+        startButton.setPosition(120, 50);
+        startButton.onClick(() -> {
+            startGame();
+            canvas.remove(startButton);
+        });
+        canvas.add(startButton);
+    } 
+
+    public void startGame(){
         drawBoard(canvas);
         tetromino = new Tetromino(canvas);
         tetromino.draw();
@@ -44,8 +56,7 @@ public class Main {
                     tetromino.draw();
                 }
             });
-    } 
-
+    }
 
     public void animateTetromino(CanvasWindow canvas){
         canvas.animate(() -> {
