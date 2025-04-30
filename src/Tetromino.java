@@ -1,7 +1,9 @@
 import edu.macalester.graphics.CanvasWindow;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import edu.macalester.graphics.Rectangle;
@@ -215,6 +217,9 @@ public class Tetromino {
         }
         return 0;
     }
+    public int getCurrentRow(Rectangle r){
+        return (int) r.getY() / HEIGHT;
+    }
 
     public double getX(){
         return x;
@@ -261,6 +266,39 @@ public class Tetromino {
         //if one piece is outside, move whole piece to the right or whole piece to the left
         //put wallCollision check here
         shape = newShape;
+    }
+    // public void clearRow() {
+    //    int rows = Main.CANVAS_HEIGHT / HEIGHT;
+    //    int cols = Main.CANVAS_WIDTH / WIDTH;
+    //    List<Rectangle> rowBlocks = new ArrayList<>();
+    //    for (Rectangle r: collisionList) {
+                
+    //         }
+
+
+    // }
+    // public void moveRowDown(){
+    //     int rows
+    // }
+    public void clearRow() {
+        int rows = Main.CANVAS_HEIGHT / HEIGHT;
+        int cols = Main.CANVAS_WIDTH / WIDTH;
+        Map <Integer, List<Rectangle>> collisionMap = new HashMap<Integer, List<Rectangle>>();
+        for (int i = 0; i < collisionList.size(); i++) {
+           Rectangle rect = collisionList.get(i);
+            int row = getCurrentRow(rect);
+            if (collisionMap.containsKey(row)) {
+                List<Rectangle> checker = collisionMap.get(row);
+                checker.add(rect);
+                collisionMap.replace(row, checker);
+            }
+            else {
+                List<Rectangle> check = new ArrayList<Rectangle>();
+                check.add(rect);
+                collisionMap.put(row,check);
+            }   
+        }
+         
     }
 
 }
