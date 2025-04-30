@@ -10,6 +10,7 @@ import java.util.Set;
 import edu.macalester.graphics.Rectangle;
 
 public class Tetromino {
+    private Main main;
     public static final int WIDTH = Main.CANVAS_WIDTH / 10;
     public static final int HEIGHT = Main.CANVAS_HEIGHT / 20;
     private CanvasWindow canvas;
@@ -27,10 +28,11 @@ public class Tetromino {
     private List<Rectangle> collisionList = new ArrayList<Rectangle>();
     
 
-    public Tetromino(CanvasWindow canvas){
+    public Tetromino(CanvasWindow canvas, Main main){
         this.x = 0;
         this.y = 0;
         this.canvas = canvas;
+        this.main = main;
         this.square = new Color[][] {
             {null, null, null, null},
             {null, Color.YELLOW, Color.YELLOW, null},
@@ -96,11 +98,11 @@ public class Tetromino {
 
     public void createRectangle(int row, int column, Color color){
         Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
-        if (checkTopCollision() && checkBlockCollision()) {
-            System.out.println("top");
-            canvas.removeAll();
-            return;
-        }
+        // if (checkTopCollision() && checkBlockCollision()) {
+        //     System.out.println("top");
+        //     canvas.removeAll();
+        //     return;
+        // }
         rect.setFillColor(color);
         rectangleList.add(rect);
         canvas.add(rect);
@@ -137,10 +139,15 @@ public class Tetromino {
     }
 
     public boolean checkTopCollision() {
-        double top = -1;
-        for (int i = 0; i<rectangleList.size(); i++) {
-            double yval = rectangleList.get(i).getY();
-            if (yval <= top) {
+        // double top = -1;
+        // for (int i = 0; i<rectangleList.size(); i++) {
+        //     double yval = rectangleList.get(i).getY();
+        //     if (yval <= top) {
+        //         return true;
+        //     }
+        // }
+        for (Rectangle rect : rectangleList) {
+            if (rect.getY() <= 0) {
                 return true;
             }
         }
@@ -154,19 +161,27 @@ public class Tetromino {
 
     public boolean checkAnyCollision(){
         if(checkBottomCollision() || checkBlockCollision()){
+            if (overlap(rectangleList)){
+                main.gameOver();
+                return true;
+            }
             collisionList.addAll(rectangleList);
             rectangleList.clear();
             newTetromino();
             draw();
             return true;
         }
-        if(checkTopCollision()) {
-            canvas.removeAll();
-            return true;
-        }
         else{
             return false;
         }
+    }
+    private boolean overlap(List<Rectangle> rectangles) {
+        for (Rectangle rect : rectangles) {
+            if (rect.getY() < HEIGHT) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean wallCollision(int newY) {
@@ -271,16 +286,16 @@ public class Tetromino {
     
     public void moveRowDown(int rowCleared){
         for(Rectangle rect: collisionList){
-            double row = rect.getY();
-            rect.setY(row+HEIGHT);
+            int rectRow = getCurrentRow(rect);
+            if (rectRow < rowCleared){
+                rect.setY(rect.getY()+HEIGHT);
+            }
         }
         
     }
 
 
     public void clearRow() {
-        int rows = Main.CANVAS_HEIGHT / HEIGHT;
-        int cols = Main.CANVAS_WIDTH / WIDTH;
         Map <Integer, List<Rectangle>> collisionMap = new HashMap<Integer, List<Rectangle>>();
         for (int i = 0; i < collisionList.size(); i++) {
            Rectangle rect = collisionList.get(i);

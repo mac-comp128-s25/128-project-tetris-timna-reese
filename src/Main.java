@@ -1,6 +1,7 @@
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.Button;
 
+
 import java.awt.Color;
 
 
@@ -9,7 +10,9 @@ public class Main {
     public static final int CANVAS_WIDTH = 350;
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
+    private boolean isGameOver = false;
 
+    
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
@@ -24,48 +27,53 @@ public class Main {
 
     public void startGame(){
         drawBoard(canvas);
-        tetromino = new Tetromino(canvas);
+        tetromino = new Tetromino(canvas, this);
         tetromino.draw();
         animateTetromino(canvas);
 
             canvas.onKeyDown((e) -> {
                 String key = e.getKey().toString();
-                if (key.equals("DOWN_ARROW")){
-                    tetromino.moveDown();
-                    tetromino.erase();
-                    tetromino.draw();
-                    tetromino.checkAnyCollision();
-                }
-                else if(key.equals("LEFT_ARROW")){
-                    if(tetromino.checkSideCollision()!=2){
-                    tetromino.erase();
-                    tetromino.moveLeft();
-                    tetromino.draw();
+                if (!isGameOver) {
+                    if (key.equals("DOWN_ARROW")){
+                        tetromino.moveDown();
+                        tetromino.erase();
+                        tetromino.draw();
+                        tetromino.checkAnyCollision();
+                    }
+                    else if(key.equals("LEFT_ARROW")){
+                        if(tetromino.checkSideCollision()!=2){
+                        tetromino.erase();
+                        tetromino.moveLeft();
+                        tetromino.draw();
+                        }
+                    }
+                    else if(key.equals("RIGHT_ARROW")){
+                        if(tetromino.checkSideCollision()!=1){
+                        tetromino.erase();
+                        tetromino.moveRight();
+                        tetromino.draw();
+                        }
+                    }
+                    else if(key.equals("SPACE")){
+                        tetromino.erase();
+                        tetromino.rotate();
+                        tetromino.draw();
                     }
                 }
-                else if(key.equals("RIGHT_ARROW")){
-                    if(tetromino.checkSideCollision()!=1){
-                    tetromino.erase();
-                    tetromino.moveRight();
-                    tetromino.draw();
-                    }
-                }
-                else if(key.equals("SPACE")){
-                    tetromino.erase();
-                    tetromino.rotate();
-                    tetromino.draw();
-                }
+                
             });
     }
 
     public void animateTetromino(CanvasWindow canvas){
         canvas.animate(() -> {
-            tetromino.getX();
+            if( !isGameOver) {
+                tetromino.getX();
             tetromino.setX(0.03);
             tetromino.checkAnyCollision();
             tetromino.erase();
             tetromino.draw();
-            tetromino.clearRow();
+            tetromino.clearRow();   
+            }
         });
     }
 
@@ -80,6 +88,20 @@ public class Main {
             horizontalLine.setStrokeColor(Color.DARK_GRAY);
             canvas.add(horizontalLine);
         }
+    }
+
+    public void gameOver() {
+        isGameOver = true;
+        System.out.println("Game Over!");
+        canvas.removeAll();
+        
+        Button restartButton = new Button("Play Again");
+        restartButton.setCenter(CANVAS_WIDTH /2.0, CANVAS_HEIGHT/2.0 +20);
+        restartButton.onClick(() -> {
+            canvas.removeAll();
+            startGame();
+        });
+        canvas.add(restartButton);
     }
 
     public static void main(String[] args) {
