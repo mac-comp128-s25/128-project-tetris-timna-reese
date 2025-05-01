@@ -108,6 +108,14 @@ public class Tetromino {
         rectangleList.clear();
     }
 
+    public int getRow(Rectangle rect){
+        return (int) rect.getY()/HEIGHT;
+    }
+
+    public int getColumn(Rectangle rect){
+        return (int) rect.getX()/WIDTH;
+    }
+
     public void draw(){
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
@@ -256,21 +264,48 @@ public class Tetromino {
                 newShape[j][3-i] = shape[i][j];
             }
         }
+
         int shiftX = 0;
-        for(int i = 0; i< newShape.length; i++){
-            for (int j = 0; j < newShape[i].length; j++){
+        int shiftY = 0;
+        for (int i = 0; i < newShape.length; i++) {
+            for (int j = 0; j < newShape[i].length; j++) {
                 if (newShape[i][j] != null) {
-                    int column = (int) y + j;
-                    if(column < 0){
-                        shiftX = Math.max(shiftX, -column);
+                    int newY = y + j;
+                    int newX = (int) x + i;
+                    if (newY < 0) {
+                        shiftX = Math.max(shiftX, -newY); // shift right
+                    } else if (newY >= 10) {
+                        shiftX = Math.min(shiftX, 9 - newY); // shift left (negative)
                     }
-                    else{
-                        shiftX = Math.min(shiftX, 10 - column - 1);
+                    if(newX>=20){
+                        shiftY = Math.min(shiftY, 19-newX);
                     }
                 }
             }
         }
-        y+= shiftX;
+        int yShift = 0;
+        for (int i = 0; i < newShape.length; i++) {
+            for (int j = 0; j < newShape[i].length; j++) {
+                if (newShape[i][j] != null) {
+                    int col = y + j;
+                    int row = (int) x + i;
+                    for (Rectangle r: collisionList){
+                        int rRow = getRow(r);
+                        int rCol = getColumn(r);
+                        if(row == rRow && col == rCol){
+                            if(y<rCol){
+                                yShift = Math.min(yShift, y - rCol - 1);
+                            }
+                            else if(y>rCol){
+                                yShift = Math.max(yShift, y - rCol + 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        y += shiftX;
         //check rotating onto new shape
         shape = newShape;
     }
