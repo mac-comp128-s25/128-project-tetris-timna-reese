@@ -266,7 +266,7 @@ public class Tetromino {
                 newShape[j][3-i] = shape[i][j];
             }
         }
-
+        boolean isCollision = false; 
         int shiftX = 0;
         int shiftY = 0;
         for (int i = 0; i < newShape.length; i++) {
@@ -275,12 +275,18 @@ public class Tetromino {
                     int newY = y + j;
                     int newX = (int) x + i;
                     if (newY < 0) {
-                        shiftX = Math.max(shiftX, -newY); // shift right
+                        isCollision = true;
+                        break;
+                       //shiftX = Math.max(shiftX, -newY); // shift right
                     } else if (newY >= 10) {
-                        shiftX = Math.min(shiftX, 9 - newY); // shift left (negative)
+                        isCollision = true;
+                        break;
+                        // shiftX = Math.min(shiftX, 9 - newY); // shift left (negative)
                     }
                     if(newX>=20){
-                        shiftY = Math.min(shiftY, 19-newX);
+                        isCollision = true;
+                        break;
+                        // shiftY = Math.min(shiftY, 19-newX);
                     }
                 }
             }
@@ -295,22 +301,27 @@ public class Tetromino {
                         int rRow = getRow(r);
                         int rCol = getColumn(r);
                         if(row == rRow && col == rCol){
-                            if(y<rCol){
-                                yShift = Math.min(yShift, y - rCol - 1);
-                            }
-                            else if(y>rCol){
-                                yShift = Math.max(yShift, y - rCol + 1);
-                            }
+                            isCollision = true;
+                            break;
+                            // if(y<rCol){
+                            //     yShift = Math.min(yShift, y - rCol - 1);
+                            // }
+                            // else if(y>rCol){
+                            //     yShift = Math.max(yShift, y - rCol + 1);
+                            // }
                         }
                     }
                 }
             }
         }
 
-        y += shiftX;
-        x += shiftY;
+        // y += shiftX;
+        // x += shiftY;
         //check rotating onto new shape
-        shape = newShape;
+        if(!isCollision){
+            shape = newShape;
+        }
+        
     }
     
     public void moveRowDown(int rowCleared){
