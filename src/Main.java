@@ -11,6 +11,7 @@ public class Main {
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
     private static boolean isGameOver = false;
+    private boolean isStarted = false;
 
     
     public Main(){
@@ -23,47 +24,51 @@ public class Main {
             canvas.remove(startButton);
         });
         canvas.add(startButton);
+        animateTetromino(canvas);
+
+        canvas.onKeyDown((e) -> {
+            if (isStarted){
+            String key = e.getKey().toString();
+            if (!isGameOver) {
+                if (key.equals("DOWN_ARROW")){
+                    tetromino.moveDown();
+                    tetromino.erase();
+                    tetromino.draw();
+                }
+                else if(key.equals("LEFT_ARROW")){
+                    if(tetromino.checkSideCollision()!=2){
+                    tetromino.erase();
+                    tetromino.moveLeft();
+                    tetromino.draw();
+                    }
+                }
+                else if(key.equals("RIGHT_ARROW")){
+                    if(tetromino.checkSideCollision()!=1){
+                    tetromino.erase();
+                    tetromino.moveRight();
+                    tetromino.draw();
+                    }
+                }
+                else if(key.equals("SPACE")){
+                    tetromino.erase();
+                    tetromino.rotate();
+                    tetromino.draw();
+                }
+            }
+        }
+        });
     } 
 
 
     public void startGame(){
+        
         drawBoard(canvas);
         tetromino = new Tetromino(canvas);
         tetromino.draw();
-        animateTetromino(canvas);
+        isStarted = true;
+        
 
-        canvas.onKeyDown(null);
-
-            canvas.onKeyDown((e) -> {
-                String key = e.getKey().toString();
-                if (!isGameOver) {
-                    if (key.equals("DOWN_ARROW")){
-                        tetromino.moveDown();
-                        tetromino.erase();
-                        tetromino.draw();
-                    }
-                    else if(key.equals("LEFT_ARROW")){
-                        if(tetromino.checkSideCollision()!=2){
-                        tetromino.erase();
-                        tetromino.moveLeft();
-                        tetromino.draw();
-                        }
-                    }
-                    else if(key.equals("RIGHT_ARROW")){
-                        if(tetromino.checkSideCollision()!=1){
-                        tetromino.erase();
-                        tetromino.moveRight();
-                        tetromino.draw();
-                        }
-                    }
-                    else if(key.equals("SPACE")){
-                        tetromino.erase();
-                        tetromino.rotate();
-                        tetromino.draw();
-                    }
-                }
-                
-            });
+            
     }
 
     public static void setGameOver(boolean bool){
@@ -72,6 +77,7 @@ public class Main {
 
     public void animateTetromino(CanvasWindow canvas){
         canvas.animate(() -> {
+            if(isStarted){
             if(!isGameOver) {
                 if(!tetromino.checkAnyCollision()){
                     tetromino.getX();
@@ -83,6 +89,7 @@ public class Main {
             }
             else{
                 gameOver();
+            }
             }
         });
     }
@@ -101,6 +108,7 @@ public class Main {
     }
 
     public void gameOver() {
+        isStarted = false;
         canvas.pause(100);
         canvas.removeAll();
         canvas.setBackground(Color.RED);
