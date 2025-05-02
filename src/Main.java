@@ -127,9 +127,9 @@ public class Main {
         youLose.setFontSize(55);
         canvas.add(gameOver);
         canvas.add(youLose);
+        score.drawFinalScore();
         canvas.pause(1000);
 
-        // canvas.removeAll();
 
         Button restartButton = new Button("Play Again");
         restartButton.setCenter(CANVAS_WIDTH /2.0, CANVAS_HEIGHT/2.0 +20);

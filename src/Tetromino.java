@@ -206,7 +206,6 @@ public class Tetromino {
             for (int j = 0; j< rectangleList.size(); j++){
                 double bottomCurrent = rectangleList.get(j).getY()+HEIGHT;
                 double topPlaced = collisionList.get(i).getY();
-                // double topCurrent = rectangleList.get(i).getY();
                 double sideCurrent = rectangleList.get(j).getX();
                 double sidePlaced = collisionList.get(i).getX();
                 if (bottomCurrent == topPlaced && sideCurrent == sidePlaced){
@@ -309,6 +308,7 @@ public class Tetromino {
         }
 
         y += shiftX;
+        x += shiftY;
         //check rotating onto new shape
         shape = newShape;
     }

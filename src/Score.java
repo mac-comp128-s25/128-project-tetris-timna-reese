@@ -18,9 +18,19 @@ public class Score {
     }
     public void drawScore() {
         scoreText.setText("SCORE: " + score);
-        scoreText.setCenter(Main.CANVAS_WIDTH / 2, 750);
+        scoreText.setPosition(40, 740);
         scoreText.setFillColor(Color.WHITE);
         scoreText.setFilled(true);
+        scoreText.setFontSize(15);
+        canvas.add(scoreText);
+    }
+
+    public void drawFinalScore(){
+        scoreText.setText("FINAL SCORE: " + score );
+        scoreText.setPosition(40, Main.CANVAS_HEIGHT/2-50);
+        scoreText.setFillColor(Color.WHITE);
+        scoreText.setFilled(true);
+        scoreText.setFontSize(20);
         canvas.add(scoreText);
     }
 
