@@ -11,6 +11,7 @@ public class Main {
     public static final int SCORECANVAS_HEIGHT = 800;
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
+    private CollisionManager collisionManager;
     private static boolean isGameOver = false;
     private boolean isStarted = false;
     private Score score;
@@ -20,60 +21,60 @@ public class Main {
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, SCORECANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
         Button startButton = new Button("Play Tetris");
+
         score = new Score(canvas);
+        collisionManager = new CollisionManager(canvas, score);
+
         startButton.setCenter(CANVAS_WIDTH/2, CANVAS_HEIGHT/5);
         startButton.onClick(() -> {
             startGame();
             canvas.remove(startButton);
         });
+
         canvas.add(startButton);
         animateTetromino(canvas);
 
         canvas.onKeyDown((e) -> {
             if (isStarted){
-            String key = e.getKey().toString();
-            if (!isGameOver) {
-                if (key.equals("DOWN_ARROW")){
-                    tetromino.moveDown();
-                    tetromino.erase();
-                    tetromino.draw();
-                }
-                else if(key.equals("LEFT_ARROW")){
-                    if(tetromino.checkSideCollision()!=2){
-                    tetromino.erase();
-                    tetromino.moveLeft();
-                    tetromino.draw();
+                String key = e.getKey().toString();
+                if (!isGameOver) {
+                    if (key.equals("DOWN_ARROW")){
+                        tetromino.moveDown();
+                        tetromino.erase();
+                        tetromino.draw();
                     }
-                }
-                else if(key.equals("RIGHT_ARROW")){
-                    if(tetromino.checkSideCollision()!=1){
-                    tetromino.erase();
-                    tetromino.moveRight();
-                    tetromino.draw();
+                    else if(key.equals("LEFT_ARROW")){
+                        if(tetromino.checkSideCollision()!=2){
+                        tetromino.erase();
+                        tetromino.moveLeft();
+                        tetromino.draw();
+                        }
                     }
-                }
-                else if(key.equals("SPACE")){
-                    tetromino.erase();
-                    tetromino.rotate();
-                    tetromino.draw();
+                    else if(key.equals("RIGHT_ARROW")){
+                        if(tetromino.checkSideCollision()!=1){
+                        tetromino.erase();
+                        tetromino.moveRight();
+                        tetromino.draw();
+                        }
+                    }
+                    else if(key.equals("SPACE")){
+                        tetromino.erase();
+                        tetromino.rotate();
+                        tetromino.draw();
+                    }
                 }
             }
-        }
         });
     } 
 
-
-    public void startGame(){
-        
+    public void startGame(){ 
         drawBoard(canvas);
-        tetromino = new Tetromino(canvas, score);
-        tetromino.draw();
+        collisionManager.clearCollisionList();
+        tetromino = new Tetromino(canvas, score, collisionManager);
+        tetromino.newTetromino();
         score.resetScore();
         score.drawScore();
-        isStarted = true;
-        
-
-            
+        isStarted = true;   
     }
 
     public static void setGameOver(boolean bool){
@@ -85,11 +86,11 @@ public class Main {
             if(isStarted){
             if(!isGameOver) {
                 if(!tetromino.checkAnyCollision()){
-                    tetromino.getX();
-                    tetromino.setX(0.03);
+                    tetromino.getRowPos();
+                    tetromino.setRowPos(0.03);
                     tetromino.erase();
                     tetromino.draw();
-                    tetromino.clearRow();   
+                    collisionManager.clearRow();
                 }
             }
             else{
@@ -129,7 +130,6 @@ public class Main {
         canvas.add(youLose);
         score.drawFinalScore();
         canvas.pause(1000);
-
 
         Button restartButton = new Button("Play Again");
         restartButton.setCenter(CANVAS_WIDTH /2.0, CANVAS_HEIGHT/2.0 +20);
