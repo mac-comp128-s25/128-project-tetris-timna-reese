@@ -25,12 +25,14 @@ public class Tetromino {
     private double x;
     private int y;
     private List<Rectangle> collisionList = new ArrayList<Rectangle>();
+    private Score score;
     
 
-    public Tetromino(CanvasWindow canvas){
+    public Tetromino(CanvasWindow canvas, Score score){
         this.x = 0;
         this.y = 0;
         this.canvas = canvas;
+        this.score = score;
         this.square = new Color[][] {
             {null, null, null, null},
             {null, Color.YELLOW, Color.YELLOW, null},
@@ -91,6 +93,7 @@ public class Tetromino {
         int index = random.nextInt(7);
         this.shape = tetrominoList[index];
         draw(); 
+        score.updateScore(4);
         return shape;
     }
 
@@ -317,6 +320,7 @@ public class Tetromino {
                 rect.setY(rect.getY()+HEIGHT);
             }
         }
+        score.updateScore(100);
         
     }
 

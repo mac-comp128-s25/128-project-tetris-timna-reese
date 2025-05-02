@@ -8,16 +8,19 @@ import java.awt.Color;
 public class Main {
     private CanvasWindow canvas;
     public static final int CANVAS_WIDTH = 350;
+    public static final int SCORECANVAS_HEIGHT = 800;
     public static final int CANVAS_HEIGHT = 700;
     private Tetromino tetromino;
     private static boolean isGameOver = false;
     private boolean isStarted = false;
+    private Score score;
 
     
     public Main(){
-        canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, CANVAS_HEIGHT);
+        canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, SCORECANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
         Button startButton = new Button("Play Tetris");
+        score = new Score(canvas);
         startButton.setCenter(CANVAS_WIDTH/2, CANVAS_HEIGHT/5);
         startButton.onClick(() -> {
             startGame();
@@ -63,8 +66,10 @@ public class Main {
     public void startGame(){
         
         drawBoard(canvas);
-        tetromino = new Tetromino(canvas);
+        tetromino = new Tetromino(canvas, score);
         tetromino.draw();
+        score.resetScore();
+        score.drawScore();
         isStarted = true;
         
 
