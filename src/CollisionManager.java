@@ -111,7 +111,16 @@ public class CollisionManager {
             }   
         }
         Set<Integer> keySet = collisionMap.keySet();
-        
+
+        int total = 0;
+        for(Integer key: keySet){
+            total += collisionMap.get(key).size();
+        }
+
+        if(total>collisionList.size()){
+            System.out.println("Big Problem");
+        }
+
         for (Integer key: keySet) {
             if(collisionMap.get(key).size()==10){
                 List<Rectangle> rectangles = collisionMap.get(key);

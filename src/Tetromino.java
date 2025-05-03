@@ -56,9 +56,7 @@ public class Tetromino {
     }
     
     public void moveDown(){
-        if(!collisionManager.checkAnyCollision(rectangleList)){
             rowPos+=1;
-        }
     }
 
     public void moveRight(){
