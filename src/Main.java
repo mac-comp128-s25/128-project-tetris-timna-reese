@@ -88,9 +88,8 @@ public class Main {
                 if(!tetromino.checkAnyCollision()){
                     tetromino.getRowPos();
                     tetromino.setRowPos(0.03);
-                    tetromino.erase();
-                    tetromino.draw();
-                    collisionManager.clearRow();
+                    tetromino.updatePosition();
+                    // collisionManager.clearRow();
                 }
             }
             else{

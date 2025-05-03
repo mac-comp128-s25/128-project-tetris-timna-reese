@@ -49,6 +49,11 @@ public class Tetromino {
         rectangleList.add(rect);
         canvas.add(rect);
     }
+
+    public void updatePosition(){
+        erase();
+        draw();
+    }
     
     public void moveDown(){
         if(!collisionManager.checkAnyCollision(rectangleList)){
