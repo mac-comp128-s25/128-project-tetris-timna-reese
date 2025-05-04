@@ -1,7 +1,6 @@
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.Button;
 
-
 import java.awt.Color;
 
 
@@ -71,9 +70,7 @@ public class Main {
         score.resetScore();
         score.drawScore();
         isStarted = true;
-        
 
-            
     }
 
     public static void setGameOver(boolean bool){
@@ -85,11 +82,10 @@ public class Main {
             if(isStarted){
             if(!isGameOver) {
                 if(!tetromino.checkAnyCollision()){
-                    tetromino.getRowPos();
-                    tetromino.setRowPos(0.03);
+                    tetromino.setRow(0.03);
                     tetromino.erase();
                     tetromino.draw();
-                    collisionManager.clearRow();
+                    tetromino.clearRow();
                 }
             }
             else{

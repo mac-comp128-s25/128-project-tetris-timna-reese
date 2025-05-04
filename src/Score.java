@@ -10,12 +10,13 @@ public class Score {
     
     public Score(CanvasWindow canvas) {
         this.canvas = canvas;
-
     }
+
     public void updateScore(int num) {
         score+=num;
         scoreText.setText("SCORE: " + score);
     }
+    
     public void drawScore() {
         scoreText.setText("SCORE: " + score);
         scoreText.setPosition(40, 740);
