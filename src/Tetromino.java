@@ -1,7 +1,11 @@
 import edu.macalester.graphics.CanvasWindow;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import edu.macalester.graphics.Rectangle;
 
@@ -9,38 +13,88 @@ public class Tetromino {
     public static final int WIDTH = Main.CANVAS_WIDTH / 10;
     public static final int HEIGHT = Main.CANVAS_HEIGHT / 20;
     private CanvasWindow canvas;
-    private CollisionManager collisionManager;
-    private Score score;
-    private Color[][] shape;
+    private Color[][] square;
+    private Color[][] line;
+    private Color[][] leftL;
+    private Color[][] rightL;
+    private Color[][] forwardS;
+    private Color[][] backwardS;
+    private Color[][] pyramid;
+    private Color [][] shape;
     private List<Rectangle> rectangleList = new ArrayList<Rectangle>();
-    private double rowPos;
-    private int colPos;
+    private double x;
+    private int y;
+    private List<Rectangle> collisionList = new ArrayList<Rectangle>();
+    private Score score;
+    
 
-    public Tetromino(CanvasWindow canvas, Score score, CollisionManager collisionManager){
+    public Tetromino(CanvasWindow canvas, Score score){
+        this.x = 0;
+        this.y = 0;
         this.canvas = canvas;
         this.score = score;
-        this.collisionManager = collisionManager;
+        this.square = new Color[][] {
+            {null, null, null, null},
+            {null, Color.YELLOW, Color.YELLOW, null},
+            {null, Color.YELLOW, Color.YELLOW, null},
+            {null, null, null, null}
+        };
+
+         this.line = new Color[][] {
+            {null, null, null, null},
+            {Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN},
+            {null, null, null, null},
+            {null, null, null, null}
+        };
+
+        this.leftL = new Color[][]{
+            {null, null, null, null},
+            {null, Color.BLUE, null, null},
+            {null, Color.BLUE, Color.BLUE, Color.BLUE},
+            {null, null, null, null}
+        };
+
+        this.rightL = new Color[][]{
+            {null, null, null,null},
+            {null, null, Color.ORANGE,null},
+            {Color.ORANGE, Color.ORANGE, Color.ORANGE,null},
+            {null, null, null,null}
+        };
+
+        this.forwardS = new Color[][]{
+            {null, null, null, null},
+            {null, null, Color.GREEN, Color.GREEN},
+            {null, Color.GREEN, Color.GREEN, null},
+            {null, null, null, null},
+        };
+
+        this.backwardS = new Color[][]{
+            {null, null, null, null},
+            {null, Color.RED, Color.RED, null},
+            {null, null, Color.RED, Color.RED},
+            {null, null, null, null},
+        };
+
+        this.pyramid = new Color[][]{
+            {null, null, null, null},
+            {null, null, Color.MAGENTA, null},
+            {null, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA},
+            {null, null, null, null},
+        }; 
+
+        newTetromino();
     }
 
     public Color[][] newTetromino(){
-        rowPos = -1;
-        colPos = 3;
-        this.shape = TetrominoShapes.getRandomTetromino();
+        x = -1;
+        y = 3;
+        Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
+        Random random = new Random();
+        int index = random.nextInt(7);
+        this.shape = tetrominoList[index];
         draw(); 
         score.updateScore(4);
         return shape;
-    }
-
-    public void draw(){
-        rectangleList.clear();
-        for(int i = 0; i< shape.length; i++){
-            for (int j = 0; j < shape[i].length; j++){
-                if(shape[i][j] != null){
-                    Color color = shape[i][j];
-                    createRectangle((int)rowPos+i,colPos+j, color);
-                }
-            }
-        }          
     }
 
     public void createRectangle(int row, int column, Color color){
@@ -49,14 +103,11 @@ public class Tetromino {
         rectangleList.add(rect);
         canvas.add(rect);
     }
-
-    public void updatePosition(){
-        erase();
-        draw();
-    }
     
     public void moveDown(){
+        if(!collisionManager.checkAnyCollision(rectangleList)){
             rowPos+=1;
+        }
     }
 
     public void moveRight(){
@@ -87,6 +138,18 @@ public class Tetromino {
         return (int) rect.getX()/WIDTH;
     }
 
+    public void draw(){
+        for(int i = 0; i< shape.length; i++){
+            for (int j = 0; j < shape[i].length; j++){
+                if(shape[i][j] != null){
+                    Color color = shape[i][j];
+                    int intX = (int)x;
+                    createRectangle(intX+i,y+j, color);
+                }
+            }
+        }          
+    }
+
     public boolean checkBottomCollision() {
         double bottom = Main.CANVAS_HEIGHT - HEIGHT;
         for (int i = 0; i< rectangleList.size(); i++) {
@@ -107,18 +170,39 @@ public class Tetromino {
         return false;
     }
 
+    public void moveDown(){
+        if (!checkAnyCollision())
+            x+=1;
+    }
 
     public void clearAll(){
-        collisionManager.clearCollisionList();
+        collisionList.clear();
         rectangleList.clear();
     }
 
     public boolean checkAnyCollision(){
-        if(collisionManager.checkAnyCollision(rectangleList)){
+        if(checkBottomCollision() || checkBlockCollision()){
+              if (overlap(rectangleList)){
+                Main.setGameOver(true);
+                return true;
+            }
+            collisionList.addAll(rectangleList);
             rectangleList.clear();
             newTetromino();
             return true;
         }
+        else{
+            return false;
+        }
+    }
+
+    private boolean overlap(List<Rectangle> rectangles) {
+        for (Rectangle newRect : rectangles) {
+                if (newRect.getY() < HEIGHT) {
+                    return true;
+                }
+            }
+            
         return false;
     }
 
@@ -136,12 +220,62 @@ public class Tetromino {
         return false;
     }
 
-    public int checkSideCollision(){
-        return collisionManager.checkSideCollision(rectangleList);
+    public boolean checkBlockCollision(){
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                double bottomCurrent = rectangleList.get(j).getY()+HEIGHT;
+                double topPlaced = collisionList.get(i).getY();
+                double sideCurrent = rectangleList.get(j).getX();
+                double sidePlaced = collisionList.get(i).getX();
+                if (bottomCurrent == topPlaced && sideCurrent == sidePlaced){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    public int checkSideCollision(){
+        for (int i = 0; i<collisionList.size(); i++){
+            for (int j = 0; j< rectangleList.size(); j++){
+                int rowPlaced = (int) collisionList.get(i).getY()/HEIGHT;
+                int rowCurrent = (int) rectangleList.get(j).getY()/HEIGHT;
+                int colCurrent = (int) rectangleList.get(j).getX()/WIDTH;
+                int colPlaced = (int) collisionList.get(i).getX()/WIDTH;
+                if (rowPlaced == rowCurrent){
+                    if(colCurrent+1 == colPlaced ){
+                    return 1; //cannot move right
+                    }
+                    if (colCurrent-1 == colPlaced){
+                    return 2; //cannot move left
+                    }
+                }
+            }
+        }
+        return 0;
+    }
     public int getCurrentRow(Rectangle r){
         return (int) r.getY() / HEIGHT;
+    }
+
+    public double getX(){
+        return x;
+    }
+
+    public void setX(double down){
+        x += down;
+    }
+
+    public void moveRight(){
+        if (!wallCollision(y+1) ) {
+            y+=1;
+        }
+    }
+
+    public void moveLeft(){
+        if (!wallCollision(y-1)) {
+            y-=1;
+        }
     }
 
     public void rotate(){
@@ -152,62 +286,105 @@ public class Tetromino {
             }
         }
         boolean isCollision = false; 
+        int shiftX = 0;
+        int shiftY = 0;
         for (int i = 0; i < newShape.length; i++) {
             for (int j = 0; j < newShape[i].length; j++) {
                 if (newShape[i][j] != null) {
-                    int newY = colPos + j;
-                    int newX = (int) rowPos + i;
+                    int newY = y + j;
+                    int newX = (int) x + i;
                     if (newY < 0) {
                         isCollision = true;
                         break;
+                       //shiftX = Math.max(shiftX, -newY); // shift right
                     } else if (newY >= 10) {
                         isCollision = true;
                         break;
+                        // shiftX = Math.min(shiftX, 9 - newY); // shift left (negative)
                     }
                     if(newX>=20){
                         isCollision = true;
                         break;
+                        // shiftY = Math.min(shiftY, 19-newX);
                     }
                 }
             }
         }
-
+        int yShift = 0;
         for (int i = 0; i < newShape.length; i++) {
             for (int j = 0; j < newShape[i].length; j++) {
                 if (newShape[i][j] != null) {
-                    int col = colPos + j;
-                    int row = (int) rowPos + i;
-                    for(Rectangle r: collisionManager.getCollisionList()){
+                    int col = y + j;
+                    int row = (int) x + i;
+                    for (Rectangle r: collisionList){
                         int rRow = getRow(r);
                         int rCol = getColumn(r);
                         if(row == rRow && col == rCol){
                             isCollision = true;
                             break;
+                            // if(y<rCol){
+                            //     yShift = Math.min(yShift, y - rCol - 1);
+                            // }
+                            // else if(y>rCol){
+                            //     yShift = Math.max(yShift, y - rCol + 1);
+                            // }
                         }
                     }
                 }
             }
         }
+
+        // y += shiftX;
+        // x += shiftY;
+        //check rotating onto new shape
         if(!isCollision){
             shape = newShape;
         }
         
     }
     
-    public List<Rectangle> getRectangleList(){
-        return rectangleList;
+    public void moveRowDown(int rowCleared){
+        for(Rectangle rect: collisionList){
+            int rectRow = getCurrentRow(rect);
+            if (rectRow < rowCleared){
+                rect.setY(rect.getY()+HEIGHT);
+            }
+        }
+        score.updateScore(100);
+        
     }
 
-    public Color [][] getShape(){
-        return shape;
+
+    public void clearRow() {
+        Map <Integer, List<Rectangle>> collisionMap = new HashMap<Integer, List<Rectangle>>();
+        for (int i = 0; i < collisionList.size(); i++) {
+           Rectangle rect = collisionList.get(i);
+            int row = getCurrentRow(rect);
+            if (collisionMap.containsKey(row)) {
+                List<Rectangle> checker = collisionMap.get(row);
+                checker.add(rect);
+                collisionMap.replace(row, checker);
+            }
+            else {
+                List<Rectangle> check = new ArrayList<Rectangle>();
+                check.add(rect);
+                collisionMap.put(row,check);
+            }   
+        }
+        Set<Integer> keySet = collisionMap.keySet();
+        
+        for (Integer key: keySet) {
+            if(collisionMap.get(key).size()==10){
+                List<Rectangle> rectangles = collisionMap.get(key);
+                for(Rectangle rect: rectangles){
+                    collisionList.remove(rect);
+                    canvas.remove(rect);
+                }
+                moveRowDown(key);
+            }
+        }
     }
 
-    public double getRowPos(){
-        return rowPos;
-    }
-
-    public void setRowPos(double down){
-        rowPos += down;
-    }    
+    
 
 }
