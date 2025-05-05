@@ -52,14 +52,6 @@ public class TetrominoShapes {
         {null, null, null, null},
     };
 
-    public static Color[][] getRandomTetromino(){
-        Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
-        Random random = new Random();
-        int index = random.nextInt(7);
-        Color[][] shape = tetrominoList[index];
-        return shape;
-    }
-
     public static Color[][] easyMode(){
         Color[][] [] tetrominoList = {square, line, leftL, rightL, forwardS, backwardS, pyramid};
         Random random = new Random();

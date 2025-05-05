@@ -3,7 +3,6 @@ import edu.macalester.graphics.ui.Button;
 
 import java.awt.Color;
 
-
 public class Main {
     private CanvasWindow canvas;
     public static final int CANVAS_WIDTH = 350;
@@ -15,7 +14,6 @@ public class Main {
     private Score score;
     private int mode = 0;
     double moveDown = 0.03;
-
     
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, SCORECANVAS_HEIGHT);
