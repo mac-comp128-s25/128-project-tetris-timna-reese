@@ -1,7 +1,9 @@
 import edu.macalester.graphics.CanvasWindow;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,20 +20,30 @@ public class Tetromino {
     private int col;
     private List<Rectangle> collisionList = new ArrayList<Rectangle>();
     private Score score;
+    private int mode; 
     
 
-    public Tetromino(CanvasWindow canvas, Score score){
+    public Tetromino(CanvasWindow canvas, Score score, int mode){
         this.row = 0;
         this.col = 0;
         this.canvas = canvas;
         this.score = score;
-        newTetromino();
+        this.mode = mode; 
+        newTetromino(mode);
     }
 
-    public Color[][] newTetromino(){
+    public Color[][] newTetromino(int mode){
         row = -1;
         col = 3;
-        this.shape = TetrominoShapes.getRandomTetromino();
+        if (mode == 0){
+            this.shape = TetrominoShapes.easyMode();
+        }
+        if (mode == 1){
+            this.shape = TetrominoShapes.hardMode();
+        }
+        if (mode == 2){
+            this.shape = TetrominoShapes.extremeMode();
+        }
         draw(); 
         score.updateScore(4);
         return shape;
@@ -108,7 +120,7 @@ public class Tetromino {
             }
             collisionList.addAll(rectangleList);
             rectangleList.clear();
-            newTetromino();
+            newTetromino(mode);
             return true;
         }
         else{
@@ -247,18 +259,7 @@ public class Tetromino {
             shape = newShape;
         }
     }
-    
-    public void moveRowDown(int rowCleared){
-        for(Rectangle rect: collisionList){
-            int rectRow = getCurrentRow(rect);
-            if (rectRow < rowCleared){
-                rect.setY(rect.getY()+HEIGHT);
-            }
-        }
-        score.updateScore(100);
-    }
-
-
+ 
     public void clearRow() {
         Map <Integer, List<Rectangle>> collisionMap = new HashMap<Integer, List<Rectangle>>();
         for (int i = 0; i < collisionList.size(); i++) {
@@ -277,16 +278,44 @@ public class Tetromino {
         }
         Set<Integer> keySet = collisionMap.keySet();
         
+        List<Rectangle> rectanglesToClear = new ArrayList<Rectangle>();
+
         for (Integer key: keySet) {
             if(collisionMap.get(key).size()==10){
                 List<Rectangle> rectangles = collisionMap.get(key);
                 for(Rectangle rect: rectangles){
-                    collisionList.remove(rect);
-                    canvas.remove(rect);
+                    rectanglesToClear.add(rect);
                 }
-                moveRowDown(key);
             }
         }
+        moveRowDown(rectanglesToClear);
+    }
+
+    public void moveRowDown(List<Rectangle> clearRectangles){
+        Set<Integer> clearedRows = new HashSet<>();
+        for (Rectangle rect: clearRectangles){
+            int row = getCurrentRow(rect);
+            clearedRows.add(row);
+            collisionList.remove(rect);
+            canvas.remove(rect);
+        }
+
+        List<Integer> sortedClearedRows = new ArrayList<>(clearedRows);
+        Collections.sort(sortedClearedRows);
+
+        for (Rectangle rect: collisionList){
+            int rectRow = getCurrentRow(rect);
+            int rowsBelow = 0;
+            for (int clearedRow: sortedClearedRows){
+                if (rectRow<clearedRow){
+                    rowsBelow ++;
+                }
+            }
+            if (rowsBelow > 0){
+                rect.setY(rect.getY() + rowsBelow * Tetromino.HEIGHT);
+            }
+        }
+        score.updateScore(100*clearedRows.size());
     }
 
 }

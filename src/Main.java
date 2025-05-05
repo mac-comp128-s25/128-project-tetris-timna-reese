@@ -13,19 +13,16 @@ public class Main {
     private static boolean isGameOver = false;
     private boolean isStarted = false;
     private Score score;
+    private int mode = 0;
+    double moveDown = 0.03;
 
     
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, SCORECANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
-        Button startButton = new Button("Play Tetris");
         score = new Score(canvas);
-        startButton.setCenter(CANVAS_WIDTH/2, CANVAS_HEIGHT/5);
-        startButton.onClick(() -> {
-            startGame();
-            canvas.remove(startButton);
-        });
-        canvas.add(startButton);
+        
+        setUpButtons();
         animateTetromino(canvas);
 
         canvas.onKeyDown((e) -> {
@@ -61,16 +58,52 @@ public class Main {
         });
     } 
 
+    public void setUpButtons(){
+        Button easyStartButton = new Button("Play Easy Mode");
+        easyStartButton.setCenter(CANVAS_WIDTH/2, 140);
+
+        Button hardStartButton = new Button("Play Hard Mode");
+        hardStartButton.setCenter(CANVAS_WIDTH/2, 175);
+
+        Button extremeStartButton = new Button("Play Extreme Mode");
+        extremeStartButton.setCenter(CANVAS_WIDTH/2, 210);
+        
+        easyStartButton.onClick(() -> {
+            startGame();
+            canvas.remove(easyStartButton);
+            canvas.remove(hardStartButton);
+            canvas.remove(extremeStartButton);
+        });
+        canvas.add(easyStartButton);
+
+        hardStartButton.onClick(() -> {
+            mode = 1;
+            moveDown = 0.05;
+            startGame();
+            canvas.remove(hardStartButton);
+            canvas.remove(easyStartButton);
+            canvas.remove(extremeStartButton);
+        });
+        canvas.add(hardStartButton);
+
+        extremeStartButton.onClick(() -> {
+            mode = 2;
+            moveDown = 0.07;
+            startGame();
+            canvas.remove(hardStartButton);
+            canvas.remove(easyStartButton);
+            canvas.remove(extremeStartButton);
+        });
+        canvas.add(extremeStartButton);
+    }
 
     public void startGame(){
-        
         drawBoard(canvas);
-        tetromino = new Tetromino(canvas, score);
+        tetromino = new Tetromino(canvas, score, mode);
         tetromino.draw();
         score.resetScore();
         score.drawScore();
         isStarted = true;
-
     }
 
     public static void setGameOver(boolean bool){
@@ -82,7 +115,7 @@ public class Main {
             if(isStarted){
             if(!isGameOver) {
                 if(!tetromino.checkAnyCollision()){
-                    tetromino.setRow(0.03);
+                    tetromino.setRow(moveDown);
                     tetromino.erase();
                     tetromino.draw();
                     tetromino.clearRow();
@@ -126,7 +159,6 @@ public class Main {
         score.drawFinalScore();
         canvas.pause(1000);
 
-
         Button restartButton = new Button("Play Again");
         restartButton.setCenter(CANVAS_WIDTH /2.0, CANVAS_HEIGHT/2.0 +20);
         restartButton.onClick(() -> {
@@ -134,7 +166,7 @@ public class Main {
             canvas.removeAll();
             tetromino.clearAll();
             canvas.setBackground(Color.BLACK);
-            startGame();
+            setUpButtons();
         });
         canvas.add(restartButton);
     }
