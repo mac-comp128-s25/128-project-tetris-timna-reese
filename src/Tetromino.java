@@ -1,3 +1,10 @@
+/**
+ * Manages a single tetromino during gameplay.
+ * 
+ * Moves, rotates, checks for collisions, clears rows, and 
+ * communicates with the canvas and score system. Each tetromino
+ * is composed of four blocks represented as Rectangle objects.
+ */
 import edu.macalester.graphics.CanvasWindow;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -22,7 +29,14 @@ public class Tetromino {
     private Score score;
     private int mode; 
     
-
+    /**
+     * Creates a new tetromino at the top of the board and selects a shape based on 
+     * the current game mode.
+     * 
+     * @param canvas the canvas on which the tetromino will be drawn
+     * @param score the score object for tracking points
+     * @param mode difficulty level (0 = Easy, 1 = Hard, 2 = Extreme)
+     */
     public Tetromino(CanvasWindow canvas, Score score, int mode){
         this.row = 0;
         this.col = 0;
@@ -32,6 +46,12 @@ public class Tetromino {
         newTetromino(mode);
     }
 
+    /**
+     * Creates a new tetromino shape based on the mode and places it on the canvas.
+     * 
+     * @param mode difficultiy level (0 = Easy, 1 = Hard, 2 = Extreme)
+     * @return the newly generated tetromino shape
+     */
     public Color[][] newTetromino(int mode){
         row = -1;
         col = 3;
@@ -49,6 +69,13 @@ public class Tetromino {
         return shape;
     }
 
+    /**
+     * Creates a single block of the tetromino and adds it to the canvas and rectangle list.
+     * 
+     * @param row the row position in grid coordinates
+     * @param column the column position in grid coordinates
+     * @param color the fill color of the block
+     */
     public void createRectangle(int row, int column, Color color){
         Rectangle rect = new Rectangle(WIDTH*column,HEIGHT*row,WIDTH,HEIGHT);
         rect.setFillColor(color);
@@ -56,6 +83,9 @@ public class Tetromino {
         canvas.add(rect);
     }
 
+    /**
+     * Erases the current tetromino from the canvas by removing its rectangles.
+     */
     public void erase(){
         for(int i =0; i<rectangleList.size(); i++){
             canvas.remove(rectangleList.get(i));
@@ -71,6 +101,9 @@ public class Tetromino {
         return (int) rect.getX()/WIDTH;
     }
 
+    /**
+     * Draws the tetromino on the canvas based on its shape and position.
+     */
     public void draw(){
         for(int i = 0; i< shape.length; i++){
             for (int j = 0; j < shape[i].length; j++){
@@ -82,6 +115,11 @@ public class Tetromino {
         }          
     }
 
+    /**
+     * Checks whether any block of the tetromino has reached the bottom of the board.
+     * 
+     * @return true if bottom collision is detected, false otherwise
+     */
     public boolean checkBottomCollision() {
         double bottom = Main.CANVAS_HEIGHT - HEIGHT;
         for (int i = 0; i< rectangleList.size(); i++) {
@@ -93,6 +131,11 @@ public class Tetromino {
         return false;
     }
 
+    /**
+     * Checks whether any block of the tetromino has reached or gone above the top of the board.
+     * 
+     * @return true if top collision is detected, false otherwise
+     */
     public boolean checkTopCollision() {
         for (Rectangle rect : rectangleList) {
             if (rect.getY() <= 0) {
@@ -102,16 +145,28 @@ public class Tetromino {
         return false;
     }
 
+    /**
+     * Moves the tetromino down by one row unless a collision is detected.
+     */
     public void moveDown(){
         if (!checkAnyCollision())
             row+=1;
     }
 
+    /**
+     * Clears all stored tetromino data.
+     */
     public void clearAll(){
         collisionList.clear();
         rectangleList.clear();
     }
 
+    /**
+     * Checks for collision with the bottom or placed blocks, and either ends the game
+     * or places the tetromino and spawns a new one.
+     * 
+     * @return true if a collision occurred, false otherwise
+     */
     public boolean checkAnyCollision(){
         if(checkBottomCollision() || checkBlockCollision()){
               if (overlap(rectangleList)){
@@ -128,6 +183,12 @@ public class Tetromino {
         }
     }
 
+    /**
+     * Checks if any part of the tetromino is overlapping the top row of the board.
+     * 
+     * @param rectangles the rectangles to check
+     * @return true if overlap is detected, false otherwise
+     */
     private boolean overlap(List<Rectangle> rectangles) {
         for (Rectangle newRect : rectangles) {
                 if (newRect.getY() < HEIGHT) {
@@ -138,6 +199,12 @@ public class Tetromino {
         return false;
     }
 
+    /**
+     * Checks if the tetromino would collide with the left or right wall after a movement.
+     * 
+     * @param newY the proposed column position
+     * @return true if wall collision would occur
+     */
     public boolean wallCollision(int newY) {
         for (int i=0; i < shape.length; i++) {
             for (int j=0; j< shape[i].length; j++) {
@@ -152,6 +219,11 @@ public class Tetromino {
         return false;
     }
 
+    /**
+     * Checks if the tetromino would collide with any placed blocks below it.
+     * 
+     * @return true if block collision is detected, false otherwise
+     */
     public boolean checkBlockCollision(){
         for (int i = 0; i<collisionList.size(); i++){
             for (int j = 0; j< rectangleList.size(); j++){
@@ -167,6 +239,11 @@ public class Tetromino {
         return false;
     }
 
+    /**
+     * Checks for side collisions with other placed blocks.
+     * 
+     * @return 1 for right collision, 2 for left collision, 0 for none
+     */
     public int checkSideCollision(){
         for (int i = 0; i<collisionList.size(); i++){
             for (int j = 0; j< rectangleList.size(); j++){
@@ -186,30 +263,56 @@ public class Tetromino {
         }
         return 0;
     }
+
+    /**
+     * Returns the current grid row of the given rectangle 
+     * 
+     * @param r the rectangle whose row position is being calculated
+     * @return the row index (0-19) of the rectangle on the board
+     */
     public int getCurrentRow(Rectangle r){
         return (int) r.getY() / HEIGHT;
     }
 
+    /**
+     * Gets the current floating-point vertical position of the tetromino's top.
+     * 
+     * @return the top row position (double) of the tetromino
+     */
     public double getRow(){
         return row;
     }
 
+    /**
+     * Increases the tetromino's row position by a given amount 
+     * 
+     * @param down the amount to add to the current row position
+     */
     public void setRow(double down){
         row += down;
     }
 
+    /**
+     * Moves the tetromino one cell to the right, if possible.
+     */
     public void moveRight(){
         if (!wallCollision(col+1) ) {
             col+=1;
         }
     }
 
+    /**
+     * Moves the tetromino one cell to the left, if possible.
+     */
     public void moveLeft(){
         if (!wallCollision(col-1)) {
             col-=1;
         }
     }
 
+    /**
+     * Rotates the tetromino clockwise, after checking for wall and block collisions.
+     */
     public void rotate(){
         Color [] [] newShape = new Color[4][4];
         for(int i = 0; i< shape.length; i++){
@@ -260,6 +363,10 @@ public class Tetromino {
         }
     }
  
+    /**
+     * Checks for and clears any completely filled rows.
+     * Updates score and moves blocks above the cleared row(s) downward.
+     */
     public void clearRow() {
         Map <Integer, List<Rectangle>> collisionMap = new HashMap<Integer, List<Rectangle>>();
         for (int i = 0; i < collisionList.size(); i++) {
@@ -291,6 +398,11 @@ public class Tetromino {
         moveRowDown(rectanglesToClear);
     }
 
+    /**
+     * Deletes full rows from the canvas and shifts blocks above downward.
+     * 
+     * @param clearRectangles list of rectangles to remove
+     */
     public void moveRowDown(List<Rectangle> clearRectangles){
         Set<Integer> clearedRows = new HashSet<>();
         for (Rectangle rect: clearRectangles){

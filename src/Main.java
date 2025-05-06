@@ -1,3 +1,12 @@
+/**
+ * Main class that initialized and runs the Tetris game.
+ * 
+ * This class creates the game canvas, displays difficulty selection buttons,
+ * handles user input (arrow keys and spacebar), and controls game flow including
+ * starting, animating, and ending the game.
+ * 
+ * It uses the Tetromino, Score, and TetrominoShapes classes.
+ */
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.Button;
 
@@ -15,6 +24,10 @@ public class Main {
     private int mode = 0;
     double moveDown = 0.03;
     
+    /**
+     * Constructs the Tetris game window, sets up score tracking,
+     * user interface buttons, key controls, and animation.
+     */
     public Main(){
         canvas = new CanvasWindow("Tetris", CANVAS_WIDTH, SCORECANVAS_HEIGHT);
         canvas.setBackground(Color.BLACK);
@@ -55,7 +68,12 @@ public class Main {
         }
         });
     } 
-
+    
+    /**
+     * Adds buttons to the screen that let the user choose between 
+     * easy, hard, or exreme difficulty modes. Each mode sets a different
+     * fall speed for the tetromino.
+     */
     public void setUpButtons(){
         Button easyStartButton = new Button("Play Easy Mode");
         easyStartButton.setCenter(CANVAS_WIDTH/2, 140);
@@ -94,7 +112,11 @@ public class Main {
         });
         canvas.add(extremeStartButton);
     }
-
+    
+    /**
+     * Starts a new game by drawing the grid, creating the first tetromino,
+     * resetting the score, and marking the game as active.
+     */
     public void startGame(){
         drawBoard(canvas);
         tetromino = new Tetromino(canvas, score, mode);
@@ -103,11 +125,22 @@ public class Main {
         score.drawScore();
         isStarted = true;
     }
-
+    
+    /**
+     * Sets game over status.
+     * 
+     * @param bool true to set game over, false to reset game over status
+     */
     public static void setGameOver(boolean bool){
         isGameOver = bool;
     }
-
+    
+    /**
+     * Animates the falling tetromino by calling the move logic.
+     * Loop checks for collision and game over conditions.
+     * 
+     * @param canvas the game canvas to animate on
+     */
     public void animateTetromino(CanvasWindow canvas){
         canvas.animate(() -> {
             if(isStarted){
@@ -126,6 +159,11 @@ public class Main {
         });
     }
 
+    /**
+     * Draws the grid on the canvas to visually create a 10x20 grid.
+     * 
+     * @param canvas the canvas on which the grid will be drawn
+     */
     public void drawBoard(CanvasWindow canvas){
         for (int i = 0; i<= CANVAS_WIDTH; i +=(CANVAS_WIDTH/10)){
             Line verticalLine = new Line (i, 0, i, CANVAS_HEIGHT);
@@ -138,7 +176,11 @@ public class Main {
             canvas.add(horizontalLine);
         }
     }
-
+    
+    /**
+     * Handles the end of the game. Pauses the game, displays a red Game Over screen,
+     * shows the final score, and provides a "Play Again" button
+     */
     public void gameOver() {
         isStarted = false;
         canvas.pause(100);
@@ -168,7 +210,12 @@ public class Main {
         });
         canvas.add(restartButton);
     }
-
+    
+    /**
+     * Entry point to run the Tetris game.
+     * 
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         new Main();
     }
